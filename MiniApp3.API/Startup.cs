@@ -1,3 +1,5 @@
+using AuthServer.Shared.Configurations;
+using AuthServer.Shared.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -25,7 +27,10 @@ namespace MiniApp3.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<CustomTokenOptions>(Configuration.GetSection("TokenOptions"));
+            var tokenOptions = Configuration.GetSection("TokenOptions").Get<CustomTokenOptions>();
 
+            services.AddCustomTokenAuth(tokenOptions);
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -44,7 +49,7 @@ namespace MiniApp3.API
             }
 
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
